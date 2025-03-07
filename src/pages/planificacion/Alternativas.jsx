@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import {
   Container,
   Paper,
@@ -127,6 +128,15 @@ const Alternativas = () => {
     formaDePago: '',
     nombreFormaPago: '',
     soporte: ''
+  });
+
+  const [visibleFields, setVisibleFields] = useState({
+    duracion: false,
+    color: false,
+    codigo_megatime: false,
+    calidad: false,
+    cooperado: false,
+    rubro: false
   });
 
   const [editandoAlternativa, setEditandoAlternativa] = useState(null);
@@ -646,7 +656,6 @@ const Alternativas = () => {
     }
   };
 
-
   const handleDuplicateAlternativa = async (alternativa) => {
 
     console.log('Nueva alternativa insertada:', alternativa);
@@ -714,6 +723,7 @@ const Alternativas = () => {
       });
     }
   };
+
 
   const handleDeleteAlternativa = async (alternativaId) => {
     try {
@@ -1994,6 +2004,31 @@ const Alternativas = () => {
   const tituloModal = modoEdicion ? 'Editar Alternativa' : 'Nueva Alternativa';
 
   const handleTemaChange = (_, newValue) => {
+    // Get the media information from the selected theme
+    const selectedMedio = newValue?.Medios;
+    
+    if (selectedMedio) {
+      // Update visible fields based on media properties
+      setVisibleFields({
+        duracion: Boolean(selectedMedio.duracion),
+        color: Boolean(selectedMedio.color),
+        codigo_megatime: Boolean(selectedMedio.codigo_megatime),
+        calidad: Boolean(selectedMedio.calidad),
+        cooperado: Boolean(selectedMedio.cooperado),
+        rubro: Boolean(selectedMedio.rubro)
+      });
+    } else {
+      // Reset visible fields if no media is selected
+      setVisibleFields({
+        duracion: false,
+        color: false,
+        codigo_megatime: false,
+        calidad: false,
+        cooperado: false,
+        rubro: false
+      });
+    }
+
     setNuevaAlternativa(prev => ({ 
       ...prev, 
       id_tema: newValue?.id_tema || '',
@@ -2109,6 +2144,15 @@ const Alternativas = () => {
                         >
                           <DeleteIcon />
                         </IconButton>
+                        <Tooltip title="Duplicar">
+                          <IconButton
+                            onClick={() => handleDuplicateAlternativa(alternativa)}
+                            size="small"
+                            color="primary"
+                          >
+                            <FileCopyIcon />
+                          </IconButton>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -2287,6 +2331,61 @@ const Alternativas = () => {
                       </FormControl>
                     </Box>
                   </Grid>
+
+                  {/* Campos dinámicos basados en el medio seleccionado */}
+                  {visibleFields.duracion && (
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Duración"
+                        value={nuevaAlternativa.segundos || ''}
+                        onChange={(e) => setNuevaAlternativa(prev => ({ ...prev, segundos: e.target.value }))}
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <TimerIcon />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    </Grid>
+                  )}
+
+                  {visibleFields.color && (
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Color"
+                        value={nuevaAlternativa.color || ''}
+                        onChange={(e) => setNuevaAlternativa(prev => ({ ...prev, color: e.target.value }))}
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <ColorLensIcon />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    </Grid>
+                  )}
+
+                  {visibleFields.codigo_megatime && (
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Código Megatime"
+                        value={nuevaAlternativa.CodigoMegatime || ''}
+                        onChange={(e) => setNuevaAlternativa(prev => ({ ...prev, CodigoMegatime: e.target.value }))}
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <CodeIcon />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    </Grid>
+                  )}
                   <Grid item xs={12} sm={6}>
                     <TextField
                       label="Forma de Pago"
